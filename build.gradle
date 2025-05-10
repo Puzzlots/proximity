@@ -1,0 +1,54 @@
+plugins {
+    id "java"
+    id "jigsaw"
+    id "com.github.johnrengelman.shadow"
+}
+
+loom {
+    splitEnvironmentSourceSets()
+    mods {
+        "proximity-audio" {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+    accessWidenerPath = file("src/main/resources/example_mod.manipulator")
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://jitpack.io"
+    }
+
+    maven {
+        name = "henkelmax.public"
+        url = 'https://maven.maxhenkel.de/repository/public'
+    }
+}
+
+dependencies {
+    cosmicReach("finalforeach:cosmicreach-alpha:${cosmic_reach_version}")
+    implementation("com.github.PuzzlesHQ:CosmicAPI:${cosmic_api_version}")
+    implementation 'de.maxhenkel.rnnoise4j:rnnoise4j:2.0.2'
+}
+
+processResources {
+    // Locations of where to inject the properties
+    def resourceTargets = [ "puzzle.mod.json" ]
+
+    // Left item is the name in the target, right is the varuable name
+    def replaceProperties = [
+            "mod_version"     : version,
+            "mod_desc"       : desc,
+            "mod_name"        : project.name,
+            "mod_id"          : id,
+    ]
+
+
+    inputs.properties replaceProperties
+    replaceProperties.put "project", project
+    filesMatching(resourceTargets) {
+        expand replaceProperties
+    }
+}

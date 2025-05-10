@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "org.example.exmod.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "PlayerMixin",
+    "networking.MixinNettyServer",
+    "networking.MixinPlayerConnect",
+    "networking.MixinPlayerJoinPacket"
+  ],
+  "server": [
+    "networking.MixinServerLauncher"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
