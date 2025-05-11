@@ -1,4 +1,4 @@
-package org.example.exmod.mixins;
+package org.example.exmod.mixins.client;
 
 import finalforeach.cosmicreach.BlockGame;
 import finalforeach.cosmicreach.gamestates.GameState;

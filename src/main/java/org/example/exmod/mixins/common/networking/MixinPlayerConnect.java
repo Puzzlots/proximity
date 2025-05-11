@@ -1,4 +1,4 @@
-package org.example.exmod.mixins.networking;
+package org.example.exmod.mixins.common.networking;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.networking.packets.entities.PlayerPacket;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;

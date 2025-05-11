@@ -2,7 +2,6 @@ package org.example.exmod.io.networking.packets;
 
 import com.github.puzzle.core.loader.meta.EnvType;
 import org.example.exmod.io.networking.IProxNetIdentity;
-import org.example.exmod.io.networking.tcp.TCPProxNetIdentity;
 import org.example.exmod.io.serialization.IKeylessDeserializer;
 import org.example.exmod.io.serialization.IKeylessSerializer;
 

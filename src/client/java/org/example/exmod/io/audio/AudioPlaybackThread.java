@@ -2,100 +2,89 @@ package org.example.exmod.io.audio;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.BufferUtils;
-import com.badlogic.gdx.utils.Queue;
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.ImmutablePair;
 import com.llamalad7.mixinextras.lib.apache.commons.tuple.Pair;
+import de.maxhenkel.opus4j.OpusDecoder;
+import de.maxhenkel.opus4j.UnknownPlatformException;
+import de.maxhenkel.rnnoise4j.Denoiser;
 import de.pottgames.tuningfork.AudioConfig;
 import de.pottgames.tuningfork.PcmFormat;
 import de.pottgames.tuningfork.PcmSoundSource;
-import de.pottgames.tuningfork.capture.CaptureDevice;
+import org.example.exmod.ThreadBuilder;
+import org.example.exmod.threading.Threads;
 
+import java.io.IOException;
 import java.nio.ShortBuffer;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
 
-    public static final Thread PLAYBACK_THREAD;
     public static IAudioPlaybackThread INSTANCE;
+    public static OpusDecoder decoder;
 
     static {
-        PLAYBACK_THREAD = new Thread(INSTANCE = new AudioPlaybackThread(), "AUDIO-PLAYBACK-THREAD");
-        PLAYBACK_THREAD.setDaemon(true);
+        ThreadBuilder builder = ThreadBuilder.create("AUDIO-PLAYBACK-THREAD", INSTANCE = new AudioPlaybackThread());
+        builder.setThreadDaemonState(true);
+        Threads.AUDIO_PLAYBACK_THREAD = builder.finish();
     }
 
-    final Queue<Object> queue = new Queue<>();
+    final Queue<Pair<byte[], Vector3>> queue = new ConcurrentLinkedQueue<>();
 
-    @Override
-    public void queue(short[] shorts) {
-        System.out.println("Queue");
-        queue.addLast(shorts);
+    public static void start() {
+        Threads.AUDIO_PLAYBACK_THREAD.start();
     }
 
-    public void queue(short[] bytes, Vector3 location) {
-        System.out.println("Queue");
-        queue.addLast(new ImmutablePair<>(bytes, location));
+    public void queue(byte[] bytes, Vector3 location) {
+        queue.add(new ImmutablePair<>(bytes, location));
     }
 
     @Override
     public void run() {
-        int bufferSize = 4410;
-
         PcmSoundSource source = null;
+        int queuePingCheck = 800000;
 
+        try {
+            decoder = new OpusDecoder(48000, 1);
+        } catch (IOException | UnknownPlatformException e) {
+            throw new RuntimeException(e);
+        }
+        decoder.setFrameSize(960);
+
+        ShortBuffer buffer1 = BufferUtils.newShortBuffer(AudioCaptureThread.rawSoundShortBufferSize);
         try {
             System.out.println("PLAYBACK START");
             boolean deviceSet = false;
             while (true) {
                 if (AudioCaptureThread.hasDevice() && !deviceSet) {
+                    System.out.println("FREQUENCY " + AudioCaptureThread.getFrequency());
                     source = new PcmSoundSource(AudioCaptureThread.getFrequency(), PcmFormat.MONO_16_BIT);
                     source.setSpatialization(AudioConfig.Spatialization.AUTO);
                     source.setVolume(30);
                     deviceSet = true;
                 }
-                System.out.println(AudioCaptureThread.hasDevice());
+                if (!deviceSet) System.out.println(AudioCaptureThread.hasDevice());
                 if (!AudioCaptureThread.hasDevice() && !deviceSet) {
-//                    System.out.println(AudioCaptureThread.hasDevice() + " " + deviceSet);
                     continue;
                 }
-//                System.out.println("AAA");
-//                System.out.println("A " + queue.size);
 
                 while (!queue.isEmpty()) {
-                    Object object = queue.removeFirst();
-                    short[] shorts = null;
-                    boolean is2D = false;
-                    Vector3 position = null;
-                    if (object instanceof short[]) {
-                        shorts = (short[]) object;
-                        is2D = true;
-                    }
-                    if (object instanceof Pair pair) {
-                        shorts = (short[]) pair.getLeft();
-                        position = (Vector3) pair.getRight();
-                    }
-                    ShortBuffer buffer1 = BufferUtils.newShortBuffer(bufferSize);
+                    Pair<byte[], Vector3> info = queue.poll();
+                    short[] shorts = decoder.decode(info.getLeft());
                     buffer1.put(shorts);
                     buffer1.flip();
                     source.queueSamples(buffer1);
-                    if (!is2D) {
-                        source.enableAttenuation();
-                        source.setAttenuationMinDistance(0);
-                        source.setAttenuationMaxDistance(118);
-                        source.setPosition(position);
-                    } else {
-                        source.disableAttenuation();
-                    }
+                    source.setAttenuationMinDistance(0);
+                    source.setAttenuationMaxDistance(118);
+                    source.setPosition(info.getRight());
                     source.play();
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        decoder.close();
         System.out.println("PLAYBACK END");
-    }
-
-    public static void start() {
-        AudioPlaybackThread.PLAYBACK_THREAD.start();
     }
 
 }

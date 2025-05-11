@@ -1,18 +1,16 @@
 package org.example.exmod.io.networking.client;
 
+import finalforeach.cosmicreach.GameSingletons;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import org.example.exmod.io.networking.Server;
+import org.example.exmod.io.networking.packets.MessagePacket;
 import org.example.exmod.io.networking.packets.ProxPacket;
-import org.example.exmod.io.networking.udp.DatagramProxChannelInitializer;
-import org.example.exmod.io.networking.udp.UDPPacketHandler;
-import org.example.exmod.io.serialization.IKeylessSerializer;
-import org.example.exmod.io.serialization.KeylessBinarySerializer;
+import org.example.exmod.io.networking.protocol.udp.UDPPacketHandler;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -29,10 +27,15 @@ public class Client {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(clientGroup)
                 .channel(NioDatagramChannel.class)
-                .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(65535))
+                .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(Server.RECV_BUFF_SIZE))
                 .handler(new UDPPacketHandler());
 
-        ChannelFuture future = bootstrap.connect(host, port).sync();
+        ChannelFuture future = bootstrap.connect(host, port).addListener((f) -> {
+            if (f.isSuccess()) {
+                System.out.println("Connected to server \"" + host + ":" + port + "\"");
+                Client.send(new MessagePacket(GameSingletons.client().getAccount().getDebugString() + " has joined the game."));
+            } else System.out.println("Could not connect to server.");
+        }).sync();
         Client.context = future.channel();
     }
 
@@ -48,21 +51,13 @@ public class Client {
     }
 
     public static void send(ProxPacket packet) throws IOException {
-        System.out.println(packet + " | " + Client.context);
+//        System.out.println(packet + " | " + Client.context);
         if (Client.context == null) return;
 
-        IKeylessSerializer serializer = new KeylessBinarySerializer();
-        packet.preWrite(serializer);
+        byte[] bytes = ProxPacket.setupToSend(packet);
 
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        byte[] bytes = serializer.toCompressedBytes();
-
-        short id = ProxPacket.REVERSE_PACKET_MAP.get(packet.getClass());
-        stream.write((byte) (id >>> 8));
-        stream.write((byte) (id));
-        stream.writeBytes(bytes);
-
-        context.writeAndFlush(Server.useUDP ? Unpooled.wrappedBuffer(stream.toByteArray()) : stream.toByteArray());
+//        System.out.println(bytes.length);
+        context.writeAndFlush(Server.useUDP ? Unpooled.wrappedBuffer(bytes) : bytes);
     }
 
 }

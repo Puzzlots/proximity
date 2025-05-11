@@ -12,6 +12,7 @@ import finalforeach.cosmicreach.util.Identifier;
 import meteordevelopment.orbit.EventHandler;
 import org.example.exmod.io.networking.Server;
 import org.example.exmod.io.networking.packets.ProxPacket;
+import org.example.exmod.io.networking.protocol.any.PacketHandlingThread;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -21,6 +22,7 @@ public class ExampleMod implements ModInitializer {
     @Override
     public void onInit() {
         PuzzleRegistries.EVENT_BUS.subscribe(this);
+        PacketHandlingThread.start();
 
         Constants.LOGGER.info("Hello From INIT");
     }

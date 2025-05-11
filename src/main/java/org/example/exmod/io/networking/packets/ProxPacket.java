@@ -4,11 +4,13 @@ import com.github.puzzle.core.Constants;
 import com.github.puzzle.core.loader.meta.EnvType;
 import finalforeach.cosmicreach.GameSingletons;
 import org.example.exmod.io.networking.IProxNetIdentity;
-import org.example.exmod.io.networking.tcp.TCPProxNetIdentity;
 import org.example.exmod.io.serialization.IKeylessDeserializer;
 import org.example.exmod.io.serialization.IKeylessSerializer;
+import org.example.exmod.io.serialization.KeylessBinarySerializer;
 
 import javax.annotation.Nullable;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +38,7 @@ public abstract class ProxPacket {
         this.write(serializer);
     }
 
-    public String getPlayerUniqueId() {
+    public String getOriginPlayerUniqueId() {
         return playerUniqueId;
     }
 
@@ -54,11 +56,36 @@ public abstract class ProxPacket {
         REVERSE_PACKET_MAP.put(packetClass, (short) id);
     }
 
+    short id = -1;
+
+    public short getId() {
+        if (id == -1) id = ProxPacket.REVERSE_PACKET_MAP.get(getClass());
+        return id;
+    }
+
+    public static byte[] setupToSend(ProxPacket packet) throws IOException {
+        IKeylessSerializer serializer = new KeylessBinarySerializer();
+        packet.preWrite(serializer);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        DataOutputStream dataStream = new DataOutputStream(stream);
+        byte[] bytes = serializer.toCompressedBytes();
+
+        short id = packet.getId();
+        dataStream.writeShort(id);
+
+        dataStream.writeInt(bytes.length);
+        dataStream.write(bytes);
+
+        dataStream.close();
+        byte[] streamByteArray = stream.toByteArray();
+        stream.close();
+
+        return streamByteArray;
+    }
+
     public static void register() {
         register(0, MessagePacket.class);
-        register(1, NonLocationalAudioPacket.class);
-        register(2, LocationalAudioPacket.class);
-        register(3, PlayerReliantAudioPacket.class);
+        register(1, EncodedPlayerReliantAudioPacket.class);
     }
 
 }

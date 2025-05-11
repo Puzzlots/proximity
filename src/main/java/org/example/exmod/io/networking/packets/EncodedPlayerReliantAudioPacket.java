@@ -1,9 +1,10 @@
 package org.example.exmod.io.networking.packets;
 
 import com.github.puzzle.core.loader.meta.EnvType;
+import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.entities.player.Player;
 import org.example.exmod.Constants;
 import org.example.exmod.io.networking.IProxNetIdentity;
-import org.example.exmod.io.networking.tcp.TCPProxNetIdentity;
 import org.example.exmod.io.networking.Server;
 import org.example.exmod.io.serialization.IKeylessDeserializer;
 import org.example.exmod.io.serialization.IKeylessSerializer;
@@ -11,24 +12,24 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
-public class NonLocationalAudioPacket extends ProxPacket {
+public class EncodedPlayerReliantAudioPacket extends ProxPacket {
 
-    short[] shorts;
+    byte[] bytes;
 
-    public NonLocationalAudioPacket() {}
+    public EncodedPlayerReliantAudioPacket() {}
 
-    public NonLocationalAudioPacket(short[] shorts) {
-        this.shorts = shorts;
+    public EncodedPlayerReliantAudioPacket(byte[] bytes) {
+        this.bytes = bytes;
     }
 
     @Override
     public void read(IKeylessDeserializer deserializer) throws IOException {
-        this.shorts = deserializer.readShortArrayAsNative();
+        this.bytes = deserializer.readByteArrayAsNative();
     }
 
     @Override
     public void write(IKeylessSerializer serializer) throws IOException {
-        serializer.writeShortArray(this.shorts);
+        serializer.writeByteArray(this.bytes);
     }
 
     @Override
@@ -41,6 +42,8 @@ public class NonLocationalAudioPacket extends ProxPacket {
             }
             return;
         }
-        Constants.audioPlaybackThread.queue(shorts);
+        Player player = GameSingletons.getPlayerFromUniqueId(getOriginPlayerUniqueId());
+        if (player != null) Constants.audioPlaybackThread.queue(this.bytes, player.getPosition());
+        else System.out.println(player);
     }
 }

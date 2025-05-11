@@ -28,10 +28,14 @@
     ]
   },
   "mixins": [
-    "example.mixins.json",
+    "mixins/example.common.mixins.json",
     {
-      "config": "example.client.mixins.json",
+      "config": "mixins/example.client.mixins.json",
       "environment": "client"
+    },
+    {
+      "config": "mixins/example.server.mixins.json",
+      "environment": "server"
     }
   ],
   "depends": {

@@ -1,7 +1,8 @@
-package org.example.exmod.mixins.networking;
+package org.example.exmod.mixins.server;
 
 import finalforeach.cosmicreach.server.ServerLauncher;
 import finalforeach.cosmicreach.settings.ServerSettings;
+import org.example.exmod.ThreadBuilder;
 import org.example.exmod.io.networking.Server;
 import org.example.exmod.io.networking.packets.ProxPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -17,16 +18,16 @@ public class MixinServerLauncher {
         ProxPacket.register();
 
         int port = ServerSettings.SERVER_PORT.getValue();
-        Thread thread = new Thread(() -> {
+        ThreadBuilder builder = ThreadBuilder.create("UDP-SERVER-THREAD", () -> {
             try {
                 Server.start(port);
                 System.out.println("Server started on port " + port);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        }, "Server-Thread");
-        thread.setDaemon(true);
-        thread.start();
+        });
+        builder.setThreadDaemonState(true);
+        builder.finish().start();
     }
 
 }

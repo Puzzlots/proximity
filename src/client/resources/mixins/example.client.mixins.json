@@ -1,16 +1,14 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "org.example.exmod.mixins",
+  "package": "org.example.exmod.mixins.client",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "BlockGameMixin",
     "ClientNetworkManagerMixin",
     "KeybindingMenuMixin",
     "NettyClientMixin",
-    "UIMixin"
-  ],
-  "client": [
+    "UIMixin",
     "HotbarMixin"
   ],
   "injectors": {

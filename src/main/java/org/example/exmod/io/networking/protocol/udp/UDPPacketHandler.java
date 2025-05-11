@@ -1,16 +1,18 @@
-package org.example.exmod.io.networking.udp;
+package org.example.exmod.io.networking.protocol.udp;
 
 import com.github.puzzle.core.Constants;
 import com.github.puzzle.core.loader.meta.EnvType;
 import finalforeach.cosmicreach.GameSingletons;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.socket.DatagramPacket;
+import org.example.exmod.io.networking.IProxNetIdentity;
 import org.example.exmod.io.networking.client.Client;
 import org.example.exmod.io.networking.Server;
 import org.example.exmod.io.networking.packets.ProxPacket;
+import org.example.exmod.io.networking.protocol.any.PacketHandlingThread;
+import org.example.exmod.io.networking.protocol.any.ProtocolLessPacketHandler;
 import org.example.exmod.io.serialization.KeylessBinaryDeserializer;
 import org.example.exmod.player.IProxPlayer;
 
@@ -64,40 +66,25 @@ public class UDPPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        DatagramPacket datagramPacket = null;
-        ByteBuf byteBuf = null;
-        DataInputStream dataInputStream;
-        ByteArrayInputStream byteArrayInputStream;
+        DatagramPacket datagramPacket = (DatagramPacket)msg;
+        ByteBuf byteBuf = datagramPacket.content();
 
         try {
-            datagramPacket = (DatagramPacket)msg;
-            byteBuf = datagramPacket.content();
             datagramPacket.retain();
 
-            short id = byteBuf.readShort();
-            Class<? extends ProxPacket> packetClass = ProxPacket.PACKET_MAP.get((Short) id);
-//            System.out.println("Packet Received " + id);
-            if (packetClass == null) {
+            IProxNetIdentity identity = Constants.SIDE == EnvType.CLIENT ? Client.IDENTITY : Server.SENDER_TO_IDENTITY_MAP.get(datagramPacket.sender());
+            if (Constants.SIDE == EnvType.SERVER && identity == null) {
+                identity = new UDPProxNetIdentity(datagramPacket.sender(), ctx);
+                Server.identityMap.put(ctx, identity);
+                Server.reverseIdentityMap.put(identity, ctx);
+                Server.SENDER_TO_IDENTITY_MAP.put(datagramPacket.sender(), identity);
+                Server.identities.add(identity);
+            }
+
+            ProtocolLessPacketHandler.handle(byteBuf, () -> {
                 datagramPacket.release();
                 byteBuf.release();
-                return;
-            }
-
-            ProxPacket packet = packetClass.newInstance();
-            packet.preRead(KeylessBinaryDeserializer.fromBytes(ByteBufUtil.getBytes(byteBuf), true));
-
-            IProxPlayer player;
-            if ((player = (IProxPlayer) GameSingletons.getPlayerFromUniqueId(packet.getPlayerUniqueId())) != null && player.needsContext()) {
-                player.setUdpAddress(datagramPacket.sender());
-                player.setUDPContext(ctx);
-//                System.out.println(packet.getPlayerUniqueId());
-//                System.out.println(GameSingletons.getPlayerFromUniqueId(packet.getPlayerUniqueId()));
-//                System.out.println(Server.identityMap.get(ctx));
-            }
-
-            packet.handle(Constants.SIDE, Constants.SIDE.equals(EnvType.SERVER) ? Server.identityMap.get(ctx) : Client.IDENTITY);
-            datagramPacket.release();
-            byteBuf.release();
+            }, identity, datagramPacket.sender());
         } catch (Exception e) {
             e.printStackTrace();
         }

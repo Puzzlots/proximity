@@ -1,6 +1,7 @@
-package org.example.exmod.mixins;
+package org.example.exmod.mixins.client;
 
 import finalforeach.cosmicreach.networking.client.ClientNetworkManager;
+import org.example.exmod.ThreadBuilder;
 import org.example.exmod.io.networking.client.Client;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,20 +20,21 @@ public class ClientNetworkManagerMixin {
         if (address.contains(":")) {
             String[] parts = address.split(":");
             ip = parts[0];
-            port = Integer.parseInt(parts[1]) + 1;
+            port = Integer.parseInt(parts[1]);
         } else {
             ip = address;
             port = 47137;
         }
 
-        Thread thread = new Thread(() -> {
+        ThreadBuilder builder = ThreadBuilder.create("UDP-CLIENT-THREAD", () -> {
             try {
+                System.out.println("Connecting to server \"" + address + "\"");
                 Client.connect(ip, port);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-        }, "Client-Thread");
-        thread.setDaemon(true);
-        thread.start();
+        });
+        builder.setThreadDaemonState(true);
+        builder.finish().start();
     }
 }

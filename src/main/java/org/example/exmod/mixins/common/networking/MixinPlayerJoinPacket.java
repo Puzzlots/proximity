@@ -1,4 +1,4 @@
-package org.example.exmod.mixins.networking;
+package org.example.exmod.mixins.common.networking;
 
 import com.github.puzzle.core.Constants;
 import com.github.puzzle.core.loader.meta.EnvType;

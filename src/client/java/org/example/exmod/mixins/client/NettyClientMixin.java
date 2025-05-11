@@ -1,4 +1,4 @@
-package org.example.exmod.mixins;
+package org.example.exmod.mixins.client;
 
 import finalforeach.cosmicreach.networking.client.netty.NettyClient;
 import io.netty.channel.ChannelHandlerContext;

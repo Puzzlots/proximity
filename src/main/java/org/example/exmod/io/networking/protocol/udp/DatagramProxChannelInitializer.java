@@ -1,5 +1,5 @@
 
-package org.example.exmod.io.networking.udp;
+package org.example.exmod.io.networking.protocol.udp;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
