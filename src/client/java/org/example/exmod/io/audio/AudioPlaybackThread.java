@@ -12,6 +12,8 @@ import de.pottgames.tuningfork.PcmFormat;
 import de.pottgames.tuningfork.PcmSoundSource;
 import finalforeach.cosmicreach.settings.INumberSetting;
 import finalforeach.cosmicreach.settings.types.FloatSetting;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.logging.log4j.core.util.StringBuilderWriter;
 import org.example.exmod.ThreadBuilder;
 import org.example.exmod.threading.Threads;
@@ -34,15 +36,15 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
     }
 
     public static INumberSetting spkVolume = new FloatSetting("speaker-volume", 100);
-    final Queue<Pair<byte[], Vector3>> queue = new ConcurrentLinkedQueue<>();
+    final Queue<Triple<byte[], Vector3, Vector3>> queue = new ConcurrentLinkedQueue<>();
 
     public static void start() {
         Threads.AUDIO_PLAYBACK_THREAD.start();
     }
 
-    public void queue(byte[] bytes, Vector3 location) {
+    public void queue(byte[] bytes, Vector3 location, Vector3 direction) {
 //        System.out.println("queued Audio");
-        queue.add(new ImmutablePair<>(bytes, location));
+        queue.add(new ImmutableTriple<>(bytes, location, direction));
     }
 
     @Override
@@ -65,8 +67,8 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
                 if (!AudioCaptureThread.hasDevice()) continue;
 
                 source = new PcmSoundSource(AudioCaptureThread.getFrequency(), PcmFormat.MONO_16_BIT);
-                source.setSpatialization(AudioConfig.Spatialization.AUTO);
                 source.setVolume(30);
+                source.enableAttenuation();
                 isDeviceUninitialized = false;
             }
             System.out.println("Device has been initialized?: " + AudioCaptureThread.hasDevice());
@@ -74,16 +76,19 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
             while (true) {
                 if (queue.isEmpty()) continue;
 
-                Pair<byte[], Vector3> info = queue.poll();
+                Triple<byte[], Vector3, Vector3> info = queue.poll();
                 short[] shorts = decoder.decode(info.getLeft());
                 buffer1.put(shorts);
                 buffer1.flip();
                 source.queueSamples(buffer1);
+                source.setVirtualization(AudioConfig.Virtualization.ON);
+                source.setSpatialization(AudioConfig.Spatialization.ON);
                 source.setAttenuationMinDistance(0);
                 source.setAttenuationMaxDistance(25);
-                source.setAttenuationFactor(.5f);
+                source.setAttenuationFactor(4);
                 source.setRadius(20);
-                source.setPosition(info.getRight());
+                source.setPosition(info.getMiddle());
+                source.makeDirectional(info.getRight(), 22.5f, 45, 16);
                 source.setVolume(AudioPlaybackThread.spkVolume.getValueAsFloat());
                 source.play();
             }

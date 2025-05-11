@@ -43,6 +43,6 @@ public class EncodedPlayerReliantAudioPacket extends ProxPacket {
             return;
         }
         Player player = GameSingletons.getPlayerFromUniqueId(getOriginPlayerUniqueId());
-        if (player != null) Constants.audioPlaybackThread.queue(this.bytes, player.getPosition());
+        if (player != null) Constants.audioPlaybackThread.queue(this.bytes, player.getPosition(), player.getEntity().viewDirection);
     }
 }
