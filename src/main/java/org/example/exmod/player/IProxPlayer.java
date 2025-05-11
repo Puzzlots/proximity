@@ -12,4 +12,5 @@ public interface IProxPlayer {
     void setUDPIdentity(IProxNetIdentity identity);
     IProxNetIdentity getUDPIdentity();
 
+    boolean needsIdentity();
 }

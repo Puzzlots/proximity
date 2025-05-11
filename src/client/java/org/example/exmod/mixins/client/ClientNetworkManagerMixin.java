@@ -28,7 +28,6 @@ public class ClientNetworkManagerMixin {
 
         ThreadBuilder builder = ThreadBuilder.create("UDP-CLIENT-THREAD", () -> {
             try {
-                System.out.println("Connecting to server \"" + address + "\"");
                 Client.connect(ip, port);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

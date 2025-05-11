@@ -25,9 +25,7 @@ public class MixinNettyServer {
                 Server.identityMap.remove(Server.reverseIdentityMap.get(identity));
                 Server.reverseIdentityMap.remove(identity);
                 Server.SENDER_TO_IDENTITY_MAP.remove(((UDPProxNetIdentity) identity).getAddress());
-                Server.identities.remove(identity);
-
-                System.out.println(((IProxPlayer) removedPlayer).getUDPAddress() + " left prox-chat server");
+                Server.identities.removeValue(identity, true);
             }
         } catch (Exception ignore) {}
     }

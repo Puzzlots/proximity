@@ -15,6 +15,7 @@ public class PlayerMixin implements IProxPlayer {
     transient IProxNetIdentity proximity_audio$identity;
     @Unique
     transient InetSocketAddress proximity_audio$address;
+    private boolean needsIdentity = true;
 
     @Override
     public void setUdpAddress(InetSocketAddress address) {
@@ -28,12 +29,19 @@ public class PlayerMixin implements IProxPlayer {
 
     @Override
     public void setUDPIdentity(IProxNetIdentity identity) {
+        this.needsIdentity = false;
+
         this.proximity_audio$identity = identity;
     }
 
     @Override
     public IProxNetIdentity getUDPIdentity() {
         return this.proximity_audio$identity;
+    }
+
+    @Override
+    public boolean needsIdentity() {
+        return this.needsIdentity;
     }
 
 }

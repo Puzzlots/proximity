@@ -10,14 +10,8 @@ import io.netty.channel.socket.DatagramPacket;
 import org.example.exmod.io.networking.IProxNetIdentity;
 import org.example.exmod.io.networking.client.Client;
 import org.example.exmod.io.networking.Server;
-import org.example.exmod.io.networking.packets.ProxPacket;
-import org.example.exmod.io.networking.protocol.any.PacketHandlingThread;
 import org.example.exmod.io.networking.protocol.any.ProtocolLessPacketHandler;
-import org.example.exmod.io.serialization.KeylessBinaryDeserializer;
-import org.example.exmod.player.IProxPlayer;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.net.SocketException;
 
 public class UDPPacketHandler extends ChannelInboundHandlerAdapter {
@@ -25,7 +19,6 @@ public class UDPPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (cause instanceof SocketException && Constants.SIDE == EnvType.CLIENT) {
-            System.out.println("Disconnected from Server");
             Client.shutdown();
         } else {
             super.exceptionCaught(ctx, cause);
@@ -35,33 +28,9 @@ public class UDPPacketHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         if (Constants.SIDE == EnvType.CLIENT) {
-            System.out.println("Disconnected from Server");
             Client.shutdown();
             super.channelInactive(ctx);
         }
-    }
-
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) throws Exception {
-        if (Constants.SIDE != EnvType.SERVER) return;
-//        String address = ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress().getHostAddress();
-
-//        System.out.println("Handler Joined " + address);
-
-//        ProxNetIdentity identity = new ProxNetIdentity(ctx);
-//        Server.identityMap.put(ctx, identity);
-//        Server.identities.add(identity);
-    }
-
-    @Override
-    public void handlerRemoved(ChannelHandlerContext ctx) throws Exception {
-//        if (Constants.SIDE != EnvType.SERVER) return;
-//        String address = ((InetSocketAddress)ctx.channel().remoteAddress()).getAddress().getHostAddress();
-//        ProxNetIdentity identity = Server.identityMap.get(ctx);
-//        Server.identities.removeValue(identity, true);
-//        Server.identityMap.remove(ctx);
-//
-//        System.out.println("Handler Left " + address);
     }
 
     @Override

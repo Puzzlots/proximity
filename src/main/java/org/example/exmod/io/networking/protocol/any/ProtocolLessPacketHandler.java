@@ -12,8 +12,9 @@ public class ProtocolLessPacketHandler {
         short packetId = byteBuf.readShort();
 
         Class<? extends ProxPacket> packetClass = ProxPacket.PACKET_MAP.get(packetId);
+        System.out.println(packetClass);
         if (packetClass == null) {
-            System.out.println("Unknown packet with id \"" + packetId + "\" and readable length of \"" + byteBuf.readableBytes() + "\".");
+            System.err.println("Unknown packet with id \"" + packetId + "\" and readable length of \"" + byteBuf.readableBytes() + "\".");
             dataReleaseTrigger.run();
             return;
         }

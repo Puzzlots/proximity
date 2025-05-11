@@ -24,12 +24,11 @@ public class Server {
     static EventLoopGroup mainGroup;
     static ChannelGroup channelGroup;
 
-    public static final List<IProxNetIdentity> identities = Collections.synchronizedList(new ArrayList<>());
+    public static final FixedArray<IProxNetIdentity> identities = new FixedArray<>();
     public static final Map<ChannelHandlerContext, IProxNetIdentity> identityMap = new ConcurrentHashMap<>();
     public static final Map<IProxNetIdentity, ChannelHandlerContext> reverseIdentityMap = new ConcurrentHashMap<>();
 
     public static final Map<InetSocketAddress, IProxNetIdentity> SENDER_TO_IDENTITY_MAP = new ConcurrentHashMap<>();
-
 
     public static void start(int port) throws InterruptedException {
         Server.identities.clear();

@@ -30,11 +30,14 @@ public class Client {
                 .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(Server.RECV_BUFF_SIZE))
                 .handler(new UDPPacketHandler());
 
+        System.out.println("Connecting to server \"" + host + ":" + port + "\"");
         ChannelFuture future = bootstrap.connect(host, port).addListener((f) -> {
             if (f.isSuccess()) {
                 System.out.println("Connected to server \"" + host + ":" + port + "\"");
                 Client.send(new MessagePacket(GameSingletons.client().getAccount().getDebugString() + " has joined the game."));
-            } else System.out.println("Could not connect to server.");
+            } else {
+                System.out.println("Failed to connect to server \"" + host + ":" + port + "\"");
+            }
         }).sync();
         Client.context = future.channel();
     }
@@ -51,12 +54,9 @@ public class Client {
     }
 
     public static void send(ProxPacket packet) throws IOException {
-//        System.out.println(packet + " | " + Client.context);
         if (Client.context == null) return;
 
         byte[] bytes = ProxPacket.setupToSend(packet);
-
-//        System.out.println(bytes.length);
         context.writeAndFlush(Server.useUDP ? Unpooled.wrappedBuffer(bytes) : bytes);
     }
 

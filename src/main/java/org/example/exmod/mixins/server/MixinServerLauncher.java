@@ -21,7 +21,7 @@ public class MixinServerLauncher {
         ThreadBuilder builder = ThreadBuilder.create("UDP-SERVER-THREAD", () -> {
             try {
                 Server.start(port);
-                System.out.println("Server started on port " + port);
+                System.out.println("UDP Voice-Chat Server started on port " + port);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

@@ -34,16 +34,12 @@ public class PacketHandlingThread implements Runnable {
     private static final Queue<PacketHandleRequest> packets = new ConcurrentLinkedQueue<>();
 
     public static void queue(PacketHandleRequest request) {
-//        System.out.println("queued " + request);
         PacketHandlingThread.packets.add(request);
     }
 
-    private static final AtomicBoolean DO_RUN = new AtomicBoolean(true);
-
     @Override
     public void run() {
-        System.out.println("PACKET-EXECUTION-THREAD-START");
-        while (DO_RUN.get()) {
+        while (true) {
             if (PacketHandlingThread.packets.isEmpty()) continue;
 
             PacketHandleRequest request = PacketHandlingThread.packets.poll();
@@ -53,7 +49,7 @@ public class PacketHandlingThread implements Runnable {
 
                 if (Server.useUDP && Constants.SIDE == EnvType.SERVER) {
                     IProxPlayer player;
-                    if ((player = (IProxPlayer) GameSingletons.getPlayerFromUniqueId(packet.getOriginPlayerUniqueId())) != null && player.needsContext()) {
+                    if ((player = (IProxPlayer) GameSingletons.getPlayerFromUniqueId(packet.getOriginPlayerUniqueId())) != null && player.needsIdentity()) {
                         player.setUdpAddress(request.sender());
                         player.setUDPIdentity((UDPProxNetIdentity) request.identity());
                     }
@@ -64,6 +60,5 @@ public class PacketHandlingThread implements Runnable {
                 throw new RuntimeException(e);
             }
         }
-        System.out.println("PACKET-EXECUTION-THREAD-END");
     }
 }

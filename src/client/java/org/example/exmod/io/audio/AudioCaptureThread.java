@@ -8,6 +8,8 @@ import de.pottgames.tuningfork.capture.CaptureConfig;
 import de.pottgames.tuningfork.capture.CaptureDevice;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.networking.client.ClientNetworkManager;
+import finalforeach.cosmicreach.settings.INumberSetting;
+import finalforeach.cosmicreach.settings.types.FloatSetting;
 import org.example.exmod.ThreadBuilder;
 import org.example.exmod.io.networking.client.Client;
 import org.example.exmod.io.networking.packets.EncodedPlayerReliantAudioPacket;
@@ -28,6 +30,7 @@ public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
     private static final AtomicBoolean LOOP_ACTIVE = new AtomicBoolean(true);
 
     public static final int rawSoundShortBufferSize = 480;
+    public static INumberSetting micVolume = new FloatSetting("mic-volume", 1);
 
     static {
         ThreadBuilder builder = ThreadBuilder.create("AUDIO-CAPTURE-THREAD", INSTANCE = new AudioCaptureThread());
@@ -63,6 +66,38 @@ public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
         Threads.AUDIO_CAPTURE_THREAD.start();
     }
 
+    public static void applyVolume(byte[] audio, float volume) {
+        for (int i = 0; i < audio.length; i += 2) {
+            short sample = (short) ((audio[i + 1] << 8) | (audio[i] & 0xFF));
+            int scaledSample = (int) (sample * volume);
+
+            // Clamp to 16-bit range to avoid overflow distortion
+            if (scaledSample > Short.MAX_VALUE) scaledSample = Short.MAX_VALUE;
+            if (scaledSample < Short.MIN_VALUE) scaledSample = Short.MIN_VALUE;
+
+            audio[i] = (byte) (scaledSample & 0xFF);
+            audio[i + 1] = (byte) ((scaledSample >> 8) & 0xFF);
+        }
+    }
+
+    public static float computeLevel(byte[] pcmBytes) {
+        int sampleCount = pcmBytes.length / 2;
+        double sum = 0.0;
+
+        for (int i = 0; i < pcmBytes.length - 1; i += 2) {
+            // Little-endian: LSB first
+            short sample = (short)((pcmBytes[i + 1] << 8) | (pcmBytes[i] & 0xFF));
+            sum += sample * sample;
+        }
+
+        float rms = (float)Math.sqrt(sum / sampleCount);
+        float db = 20f * (float)Math.log10(rms / 32768f + 1e-6f); // dBFS with epsilon
+        db = Math.max(-60f, Math.min(0f, db)); // clamp between -60dB and 0dB
+
+        float normalized = (db + 60f) / 60f; // normalize to 0.0 - 1.0
+        return (float)Math.pow(normalized, 1.5); // perceptual curve
+    }
+
     @Override
     public void run() {
         short[] buffer = new short[AudioCaptureThread.rawSoundShortBufferSize];
@@ -73,7 +108,6 @@ public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
             throw new RuntimeException(e);
         }
 
-        System.out.println("CAPTURE START");
         final List<String> inputDeviceList = CaptureDevice.availableDevices();
         if (inputDeviceList == null || inputDeviceList.isEmpty()) {
             System.out.println("Error: no input device found");
@@ -102,22 +136,22 @@ public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
                 captureWasStopped = false;
             }
 
-            while (device.capturedSamples() >= AudioCaptureThread.rawSoundShortBufferSize) {
-                device.fetch16BitSamples(buffer, AudioCaptureThread.rawSoundShortBufferSize);
-                short[] denoisedBuffer = denoiser.denoise(buffer);
-                byte[] bytes = encoder.encode(denoisedBuffer);
+            if (device.capturedSamples() < AudioCaptureThread.rawSoundShortBufferSize) continue;
 
-                if (ClientNetworkManager.isConnected() && InGame.getLocalPlayer() != null && InGame.getLocalPlayer().getPosition() != null) {
-                    ProxPacket packet = new EncodedPlayerReliantAudioPacket(bytes);
-                    try {
-                        Client.send(packet);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            device.fetch16BitSamples(buffer, AudioCaptureThread.rawSoundShortBufferSize);
+            short[] denoisedBuffer = denoiser.denoise(buffer);
+            byte[] bytes = encoder.encode(denoisedBuffer);
+//            AudioCaptureThread.applyVolume(bytes, AudioCaptureThread.micVolume.getValueAsFloat());
+
+            if (ClientNetworkManager.isConnected() && InGame.getLocalPlayer() != null && InGame.getLocalPlayer().getPosition() != null) {
+                ProxPacket packet = new EncodedPlayerReliantAudioPacket(bytes);
+                try {
+                    Client.send(packet);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         }
-        System.out.println("CAPTURE END");
 
         if (!AudioCaptureThread.MIC_MUTED.get())
             device.stopCapture();
