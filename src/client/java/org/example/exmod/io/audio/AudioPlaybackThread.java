@@ -81,6 +81,7 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
                 source.queueSamples(buffer1);
                 source.setAttenuationMinDistance(0);
                 source.setAttenuationMaxDistance(118);
+                source.setRadius(20);
                 source.setPosition(info.getRight());
                 source.setVolume(AudioPlaybackThread.spkVolume.getValueAsFloat());
                 source.play();
