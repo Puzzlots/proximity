@@ -8,8 +8,7 @@
     "ClientNetworkManagerMixin",
     "KeybindingMenuMixin",
     "NettyClientMixin",
-    "UIMixin",
-    "HotbarMixin"
+    "UIMixin"
   ],
   "injectors": {
     "defaultRequire": 1
