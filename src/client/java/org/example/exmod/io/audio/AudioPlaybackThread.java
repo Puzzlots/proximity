@@ -41,7 +41,7 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
     }
 
     public void queue(byte[] bytes, Vector3 location) {
-        System.out.println("queued Audio");
+//        System.out.println("queued Audio");
         queue.add(new ImmutablePair<>(bytes, location));
     }
 
