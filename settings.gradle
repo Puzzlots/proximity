@@ -17,5 +17,5 @@ buildscript {
     }
 }
 
-rootProject.name = 'proximity-audio'
+rootProject.name = 'proximity'
 
