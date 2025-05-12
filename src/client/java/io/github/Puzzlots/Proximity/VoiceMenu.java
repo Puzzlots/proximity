@@ -152,7 +152,7 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
         this.stage.addActor(spkSlider);
 
 
-//        mic button
+//      mic button
         CRButton micButton = new CRButton() {
 
             public void onClick() {
@@ -162,12 +162,14 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
             }
 
             public void updateText() {
-                String string = "Mic: "/*Lang.get("difficultyButton")*/;
-                this.setText(string + ((AudioCaptureThread.MIC_MUTED.get()) ? VoiceMenu.this.on : VoiceMenu.this.off));
+                String string = "Mic: "/*Lang.get("micButton")*/;
+                this.setText(string + ((AudioCaptureThread.MIC_MUTED.get()) ? VoiceMenu.this.off : VoiceMenu.this.on));
             }
         };
-        String string = "Mic: "/*Lang.get("difficultyButton")*/;
-        micButton.setText(string + ((AudioCaptureThread.MIC_MUTED.get()) ? VoiceMenu.this.on : VoiceMenu.this.off));
+
+        // Initialise text due to updateText() being unreachable
+        String string = "Mic: "/*Lang.get("micButton")*/;
+        micButton.setText(string + ((AudioCaptureThread.MIC_MUTED.get()) ? VoiceMenu.this.off : VoiceMenu.this.on));
 
 
         micButton.addAction(new AlignXAction(1, 0.5F));
