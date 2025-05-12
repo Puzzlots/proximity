@@ -9,6 +9,7 @@ import de.pottgames.tuningfork.PcmFormat;
 import de.pottgames.tuningfork.PcmSoundSource;
 import finalforeach.cosmicreach.settings.INumberSetting;
 import finalforeach.cosmicreach.settings.types.FloatSetting;
+import io.github.Puzzlots.Proximity.Constants;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import io.github.Puzzlots.Proximity.threading.ThreadBuilder;
@@ -18,6 +19,8 @@ import java.io.IOException;
 import java.nio.ShortBuffer;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import static io.github.Puzzlots.Proximity.util.AudioUtils.computeLevel;
 
 public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
 
@@ -32,6 +35,8 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
 
     public static INumberSetting spkVolume = new FloatSetting("speaker-volume", 100);
     final Queue<Triple<byte[], Vector3, Vector3>> queue = new ConcurrentLinkedQueue<>();
+
+    public static float spkLevel = 0;
 
     public static void start() {
         Threads.AUDIO_PLAYBACK_THREAD.start();
@@ -78,7 +83,9 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
                 if (queue.isEmpty()) continue;
 
                 Triple<byte[], Vector3, Vector3> info = queue.poll();
+
                 short[] shorts = decoder.decode(info.getLeft());
+                spkLevel = computeLevel(shorts);
                 buffer1.put(shorts);
                 buffer1.flip();
                 source.queueSamples(buffer1);

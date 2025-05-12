@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import finalforeach.cosmicreach.ClientZoneLoader;
-import finalforeach.cosmicreach.GameAssetLoader;
 import finalforeach.cosmicreach.TickRunner;
 import finalforeach.cosmicreach.gamestates.GameState;
 import finalforeach.cosmicreach.gamestates.IGameStateInWorld;
@@ -21,13 +20,15 @@ import finalforeach.cosmicreach.ui.actions.AlignYAction;
 import finalforeach.cosmicreach.ui.widgets.CRButton;
 import finalforeach.cosmicreach.ui.widgets.CRSlider;
 import finalforeach.cosmicreach.ui.widgets.ProgressArrowTexture;
-import finalforeach.cosmicreach.util.Identifier;
 import finalforeach.cosmicreach.util.Orientation2D;
 import io.github.Puzzlots.Proximity.io.audio.AudioCaptureThread;
 import io.github.Puzzlots.Proximity.io.audio.AudioPlaybackThread;
 import org.lwjgl.opengl.GL20;
 
 import java.text.NumberFormat;
+
+import static io.github.Puzzlots.Proximity.io.audio.AudioCaptureThread.micLevel;
+import static io.github.Puzzlots.Proximity.io.audio.AudioPlaybackThread.spkLevel;
 
 
 public class VoiceMenu extends GameState implements IGameStateInWorld {
@@ -190,8 +191,10 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
                 this.setText(string + ((VoiceMenu.drawIcon) ? VoiceMenu.this.on : VoiceMenu.this.off));
             }
         };
-        iconButton.onClick();
-        iconButton.onClick();   //update text
+
+        // Initialise text due to updateText() being unreachable
+        string = "Icon: "/*Lang.get("difficultyButton")*/;
+        iconButton.setText(string + ((VoiceMenu.drawIcon) ? VoiceMenu.this.on : VoiceMenu.this.off));
 
         iconButton.addAction(new AlignXAction(1, 0.5F));
         iconButton.addAction(new AlignYAction(1, 0.5F, -100.0F));
@@ -230,9 +233,8 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
         Gdx.gl.glBlendFunc(770, 771);
         IN_GAME.render();
         Gdx.gl.glCullFace(1028);
-//        micVolumeBar.setProgress(micLevel);
-//        spkVolumeBar.setProgress(spkLevel);
-//        Constants.LOGGER.info("Level: {}", micLevel);
+        micVolumeBar.setProgress(micLevel);
+        spkVolumeBar.setProgress(spkLevel);
         this.stage.draw();
         Gdx.gl.glEnable(2884);
         Gdx.gl.glCullFace(1029);
