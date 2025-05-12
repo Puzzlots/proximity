@@ -11,38 +11,32 @@
     "Replet"
   ],
   "meta": {
-    "icon": "proximity-audio:icons/icon.png"
+    "icon": "proximity:icons/icon.png"
   },
   "entrypoints": {
-    "postInit": [
-      "org.example.exmod.ExampleModPostinit"
-    ],
     "client_init": [
-      "org.example.exmod.ClientInitializer"
+      "io.github.Puzzlots.Proximity.ClientInitializer"
     ],
     "init": [
-      "org.example.exmod.ExampleMod"
-    ],
-    "preInit": [
-      "org.example.exmod.ExampleModPreinit"
+      "io.github.Puzzlots.Proximity.Proximity"
     ]
   },
   "mixins": [
-    "mixins/example.common.mixins.json",
+    "mixins/proximity.common.mixins.json",
     {
-      "config": "mixins/example.client.mixins.json",
+      "config": "mixins/proximity.client.mixins.json",
       "environment": "client"
     },
     {
-      "config": "mixins/example.server.mixins.json",
+      "config": "mixins/proximity.server.mixins.json",
       "environment": "server"
     }
   ],
   "depends": {
     "cosmic-reach": ">=0.4.5",
-    "puzzle-loader": ">=3.0.2"
+    "puzzle-loader": ">=3.0.4"
   },
   "accessTransformers": [
-    "example_mod.manipulator"
+    "proximity.manipulator"
   ]
 }

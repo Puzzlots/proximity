@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "io.github.Puzzlots.Proximity.mixins.client",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "BlockGameMixin",
+    "ClientNetworkManagerMixin",
+    "KeybindingMenuMixin",
+    "NettyClientMixin",
+    "UIMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

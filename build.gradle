@@ -7,12 +7,12 @@ plugins {
 loom {
     splitEnvironmentSourceSets()
     mods {
-        "proximity-audio" {
+        "proximity" {
             sourceSet sourceSets.main
             sourceSet sourceSets.client
         }
     }
-    accessWidenerPath = file("src/main/resources/example_mod.manipulator")
+    accessWidenerPath = file("src/main/resources/proximity.manipulator")
 }
 
 repositories {
