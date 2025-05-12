@@ -69,6 +69,12 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
                 source = new PcmSoundSource(AudioCaptureThread.getFrequency(), PcmFormat.MONO_16_BIT);
                 source.setVolume(30);
                 source.enableAttenuation();
+                source.makeDirectional(new Vector3(0, 0, 0), 22.5f, 45, .2f);
+                source.setVirtualization(AudioConfig.Virtualization.ON);
+                source.setSpatialization(AudioConfig.Spatialization.ON);
+                source.setAttenuationMinDistance(0);
+                source.setAttenuationMaxDistance(25);
+                source.setRadius(20);
                 isDeviceUninitialized = false;
             }
             System.out.println("Device has been initialized?: " + AudioCaptureThread.hasDevice());
@@ -81,14 +87,8 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
                 buffer1.put(shorts);
                 buffer1.flip();
                 source.queueSamples(buffer1);
-                source.setVirtualization(AudioConfig.Virtualization.ON);
-                source.setSpatialization(AudioConfig.Spatialization.ON);
-                source.setAttenuationMinDistance(0);
-                source.setAttenuationMaxDistance(25);
-                source.setAttenuationFactor(4);
-                source.setRadius(20);
+                source.setDirection(info.getRight());
                 source.setPosition(info.getMiddle());
-                source.makeDirectional(info.getRight(), 22.5f, 45, 16);
                 source.setVolume(AudioPlaybackThread.spkVolume.getValueAsFloat());
                 source.play();
             }
