@@ -1,6 +1,22 @@
 package io.github.Puzzlots.Proximity.util;
 
 public class AudioUtils {
+
+    public static void applyVolume(short[] audio, float volume) {
+        for (int i = 0; i < audio.length; i++) {
+            int scaled = (int) (audio[i] * volume);
+
+            // Clamp to 16-bit signed range
+            if (scaled > Short.MAX_VALUE) {
+                scaled = Short.MAX_VALUE;
+            } else if (scaled < Short.MIN_VALUE) {
+                scaled = Short.MIN_VALUE;
+            }
+
+            audio[i] = (short) scaled;
+        }
+    }
+
     public static float computeLevel(short[] pcmSamples) {
         int sampleCount = pcmSamples.length;
         if (sampleCount == 0) return 0f;

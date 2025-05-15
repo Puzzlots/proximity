@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static io.github.Puzzlots.Proximity.util.AudioUtils.applyVolume;
 import static io.github.Puzzlots.Proximity.util.AudioUtils.computeLevel;
 
 public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
@@ -111,6 +112,7 @@ public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
             if (device.capturedSamples() < AudioCaptureThread.rawSoundShortBufferSize) continue;
 
             device.fetch16BitSamples(buffer, AudioCaptureThread.rawSoundShortBufferSize);
+            applyVolume(buffer, micVolume.getValueAsFloat());
             short[] denoisedBuffer = denoiser.denoise(buffer);
             micLevel = computeLevel(denoisedBuffer);
             byte[] bytes = encoder.encode(denoisedBuffer);
