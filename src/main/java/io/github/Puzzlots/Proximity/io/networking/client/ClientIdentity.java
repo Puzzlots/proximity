@@ -1,6 +1,6 @@
 package io.github.Puzzlots.Proximity.io.networking.client;
 
-import com.github.puzzle.core.loader.meta.EnvType;
+import dev.puzzleshq.puzzleloader.loader.util.EnvType;
 import io.github.Puzzlots.Proximity.io.networking.IProxNetIdentity;
 import io.github.Puzzlots.Proximity.io.networking.packets.ProxPacket;
 
@@ -17,6 +17,4 @@ public class ClientIdentity implements IProxNetIdentity {
     public EnvType getSide() {
         return EnvType.CLIENT;
     }
-
-
 }

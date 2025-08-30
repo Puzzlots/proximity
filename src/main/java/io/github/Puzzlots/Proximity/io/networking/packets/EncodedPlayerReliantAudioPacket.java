@@ -1,7 +1,7 @@
 package io.github.Puzzlots.Proximity.io.networking.packets;
 
-import com.github.puzzle.core.loader.meta.EnvType;
-import finalforeach.cosmicreach.GameSingletons;
+import dev.puzzleshq.puzzleloader.loader.util.EnvType;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.entities.player.Player;
 import io.github.Puzzlots.Proximity.Constants;
 import io.github.Puzzlots.Proximity.io.networking.IProxNetIdentity;
@@ -11,6 +11,8 @@ import io.github.Puzzlots.Proximity.io.serialization.IKeylessSerializer;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+
+import static finalforeach.cosmicreach.singletons.GameSingletonPlayers.getPlayerFromUniqueId;
 
 public class EncodedPlayerReliantAudioPacket extends ProxPacket {
 
@@ -42,7 +44,7 @@ public class EncodedPlayerReliantAudioPacket extends ProxPacket {
             }
             return;
         }
-        Player player = GameSingletons.getPlayerFromUniqueId(getOriginPlayerUniqueId());
+        Player player = getPlayerFromUniqueId(getOriginPlayerUniqueId());
         if (player != null) Constants.audioPlaybackThread.queue(this.bytes, player.getPosition(), player.getEntity().viewDirection);
     }
 }

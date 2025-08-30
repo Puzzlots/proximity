@@ -1,9 +1,9 @@
 {
-  "formatVersion": 1,
+  "formatVersion": 3,
+  "display-name": "${mod_name}",
   "id": "${mod_id}",
   "version": "${mod_version}",
-  "name": "${mod_name}",
-  "description": "${mod_desc}",
+  "description": "${mod_desc}.",
   "authors": [
     "Zombii",
     "Lemon",
@@ -11,20 +11,25 @@
     "Replet"
   ],
   "meta": {
-    "icon": "proximity:icons/icon.png"
+    "icon": "${mod_id}:icons/icon.png"
   },
   "entrypoints": {
-    "client_init": [
-      "io.github.Puzzlots.Proximity.ClientInitializer"
-    ],
     "init": [
       "io.github.Puzzlots.Proximity.Proximity"
+    ],
+    "client-init": [
+      "io.github.Puzzlots.Proximity.ClientInitializer"
     ]
   },
+  "depends": {
+    "cosmic-reach": ">=${cosmic_reach_minimum}",
+    "puzzle-loader-cosmic": ">=${puzzle_loader_cosmic}",
+    "puzzle-loader-core": ">=${puzzle_loader_core}"
+  },
   "mixins": [
-    "mixins/proximity.common.mixins.json",
+    "mixins/${mod_id}.common.mixins.json",
     {
-      "config": "mixins/proximity.client.mixins.json",
+      "config": "mixins/${mod_id}.client.mixins.json",
       "environment": "client"
     },
     {
@@ -32,11 +37,7 @@
       "environment": "server"
     }
   ],
-  "depends": {
-    "cosmic-reach": ">=0.4.5",
-    "puzzle-loader": ">=3.0.4"
-  },
-  "accessTransformers": [
-    "proximity.manipulator"
+  "access-writers": [
+    "${mod_id}.manipulator"
   ]
 }

@@ -1,8 +1,7 @@
 package io.github.Puzzlots.Proximity.io.networking.packets;
 
-import com.github.puzzle.core.Constants;
-import com.github.puzzle.core.loader.meta.EnvType;
-import finalforeach.cosmicreach.GameSingletons;
+import dev.puzzleshq.puzzleloader.loader.util.EnvType;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import io.github.Puzzlots.Proximity.io.networking.IProxNetIdentity;
 import io.github.Puzzlots.Proximity.io.serialization.IKeylessDeserializer;
 import io.github.Puzzlots.Proximity.io.serialization.IKeylessSerializer;
@@ -29,7 +28,7 @@ public abstract class ProxPacket {
     }
 
     public final void preWrite(IKeylessSerializer serializer) throws IOException {
-        if (Constants.SIDE == EnvType.CLIENT) {
+        if (GameSingletons.isClient) {
             serializer.writeString(GameSingletons.client().getAccount().getUniqueId());
         } else {
             serializer.writeString(playerUniqueId);

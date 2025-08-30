@@ -1,6 +1,6 @@
 package io.github.Puzzlots.Proximity.io.networking.client;
 
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Client {
-
     static EventLoopGroup clientGroup;
     public static Channel context;
     public static final AtomicBoolean shouldStartSendingAudio = new AtomicBoolean(false);

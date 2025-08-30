@@ -1,7 +1,8 @@
 package io.github.Puzzlots.Proximity.io.networking.protocol.udp;
 
-import com.github.puzzle.core.Constants;
-import com.github.puzzle.core.loader.meta.EnvType;
+import com.badlogic.gdx.Game;
+import dev.puzzleshq.puzzleloader.loader.util.EnvType;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
@@ -37,7 +38,7 @@ public class UDPProxNetIdentity implements IProxNetIdentity {
     }
 
     public EnvType getSide() {
-        return Constants.SIDE;
+        return GameSingletons.isClient ? EnvType.CLIENT : EnvType.SERVER;
     }
 
 }

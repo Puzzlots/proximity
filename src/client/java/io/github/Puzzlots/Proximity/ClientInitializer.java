@@ -1,14 +1,14 @@
 package io.github.Puzzlots.Proximity;
 
-import com.github.puzzle.core.loader.launch.provider.mod.entrypoint.impls.ClientModInitializer;
+import dev.puzzleshq.puzzleloader.cosmic.core.modInitialises.ClientModInit;
 import io.github.Puzzlots.Proximity.io.audio.AudioCaptureThread;
 import io.github.Puzzlots.Proximity.io.audio.AudioPlaybackThread;
 import io.github.Puzzlots.Proximity.io.networking.packets.ProxPacket;
 
-public class ClientInitializer implements ClientModInitializer {
+public class ClientInitializer implements ClientModInit {
 
     @Override
-    public void onInit() {
+    public void onClientInit() {
         ProxPacket.register();
         AudioCaptureThread.start();
         AudioPlaybackThread.start();

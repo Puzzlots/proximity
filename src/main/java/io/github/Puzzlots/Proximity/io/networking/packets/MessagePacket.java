@@ -1,6 +1,6 @@
 package io.github.Puzzlots.Proximity.io.networking.packets;
 
-import com.github.puzzle.core.loader.meta.EnvType;
+import dev.puzzleshq.puzzleloader.loader.util.EnvType;
 import io.github.Puzzlots.Proximity.io.networking.IProxNetIdentity;
 import io.github.Puzzlots.Proximity.io.serialization.IKeylessDeserializer;
 import io.github.Puzzlots.Proximity.io.serialization.IKeylessSerializer;

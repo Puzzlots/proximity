@@ -1,6 +1,6 @@
 package io.github.Puzzlots.Proximity.io.networking;
 
-import com.github.puzzle.core.loader.meta.EnvType;
+import dev.puzzleshq.puzzleloader.loader.util.EnvType;
 import io.github.Puzzlots.Proximity.io.networking.packets.ProxPacket;
 
 import java.io.IOException;

@@ -1,7 +1,7 @@
 plugins {
     id "java"
     id "jigsaw"
-    id "com.github.johnrengelman.shadow"
+    id 'com.gradleup.shadow'
 }
 
 loom {
@@ -28,23 +28,27 @@ repositories {
 }
 
 dependencies {
-    cosmicReach("finalforeach:cosmicreach-alpha:${cosmic_reach_version}")
+    cosmicReach("finalforeach:cosmicreach:${cosmic_reach_version}")
     implementation 'de.maxhenkel.rnnoise4j:rnnoise4j:2.0.2'
     implementation 'de.maxhenkel.opus4j:opus4j:2.0.2'
+    implementation "org.apache.commons:commons-lang3:3.14.0"
 }
 
 processResources {
     // Locations of where to inject the properties
     def resourceTargets = [ "puzzle.mod.json" ]
 
-    // Left item is the name in the target, right is the varuable name
+    // Left item is the name in the target, right is the variable name
     def replaceProperties = [
             "mod_version"     : version,
-            "mod_desc"       : desc,
+            "mod_desc"        : description,
             "mod_name"        : project.name,
             "mod_id"          : id,
+            "cosmic_reach"    : cosmic_reach_version,
+            "cosmic_reach_minimum"    : cosmic_reach_minimum_version,
+            "puzzle_loader_cosmic"    : puzzle_cosmic_version,
+            "puzzle_loader_core"      : puzzle_core_version
     ]
-
 
     inputs.properties replaceProperties
     replaceProperties.put "project", project

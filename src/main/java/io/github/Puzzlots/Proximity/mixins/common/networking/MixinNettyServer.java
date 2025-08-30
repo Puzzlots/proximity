@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(NettyServer.class)
 public class MixinNettyServer {
-
     @Inject(method = "removeContext", at = @At("TAIL"))
     private void removeContext(ChannelHandlerContext ctx, CallbackInfo ci, @Local Player removedPlayer) {
         try {
@@ -29,5 +28,4 @@ public class MixinNettyServer {
             }
         } catch (Exception ignore) {}
     }
-
 }

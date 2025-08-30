@@ -1,7 +1,6 @@
 package io.github.Puzzlots.Proximity.io.networking.protocol.udp;
 
-import com.github.puzzle.core.Constants;
-import com.github.puzzle.core.loader.meta.EnvType;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -17,7 +16,7 @@ public class UDPPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        if (cause instanceof SocketException && Constants.SIDE == EnvType.CLIENT) {
+        if (cause instanceof SocketException && GameSingletons.isClient) {
             Client.shutdown();
         } else {
             super.exceptionCaught(ctx, cause);
@@ -26,7 +25,7 @@ public class UDPPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        if (Constants.SIDE == EnvType.CLIENT) {
+        if (GameSingletons.isClient) {
             Client.shutdown();
             super.channelInactive(ctx);
         }
@@ -40,8 +39,8 @@ public class UDPPacketHandler extends ChannelInboundHandlerAdapter {
         try {
             datagramPacket.retain();
 
-            IProxNetIdentity identity = Constants.SIDE == EnvType.CLIENT ? Client.IDENTITY : Server.SENDER_TO_IDENTITY_MAP.get(datagramPacket.sender());
-            if (Constants.SIDE == EnvType.SERVER && identity == null) {
+            IProxNetIdentity identity = GameSingletons.isClient ? Client.IDENTITY : Server.SENDER_TO_IDENTITY_MAP.get(datagramPacket.sender());
+            if (GameSingletons.isHost && identity == null) {
                 identity = new UDPProxNetIdentity(datagramPacket.sender(), ctx);
                 Server.identityMap.put(ctx, identity);
                 Server.reverseIdentityMap.put(identity, ctx);

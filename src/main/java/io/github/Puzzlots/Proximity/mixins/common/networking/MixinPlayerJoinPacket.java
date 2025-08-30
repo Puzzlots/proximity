@@ -1,8 +1,6 @@
 package io.github.Puzzlots.Proximity.mixins.common.networking;
 
-import com.github.puzzle.core.Constants;
-import com.github.puzzle.core.loader.meta.EnvType;
-import finalforeach.cosmicreach.GameSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import finalforeach.cosmicreach.networking.NetworkIdentity;
 import finalforeach.cosmicreach.networking.packets.entities.PlayerPositionPacket;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,8 +20,7 @@ public class MixinPlayerJoinPacket {
 
     @Inject(method = "handle", at = @At("TAIL"))
     private void handle(NetworkIdentity identity, ChannelHandlerContext ctx, CallbackInfo ci) {
-        if (Constants.SIDE == EnvType.SERVER) {
-
+        if (GameSingletons.isHost) {
             return;
         }
 

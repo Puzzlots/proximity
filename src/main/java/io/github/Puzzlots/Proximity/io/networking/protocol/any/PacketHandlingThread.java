@@ -1,8 +1,8 @@
 package io.github.Puzzlots.Proximity.io.networking.protocol.any;
 
-import com.github.puzzle.core.Constants;
-import com.github.puzzle.core.loader.meta.EnvType;
-import finalforeach.cosmicreach.GameSingletons;
+import dev.puzzleshq.puzzleloader.loader.util.EnvType;
+import finalforeach.cosmicreach.networking.server.ServerSingletons;
+import finalforeach.cosmicreach.singletons.GameSingletons;
 import io.github.Puzzlots.Proximity.threading.ThreadBuilder;
 import io.github.Puzzlots.Proximity.io.networking.Server;
 import io.github.Puzzlots.Proximity.io.networking.packets.ProxPacket;
@@ -46,15 +46,15 @@ public class PacketHandlingThread implements Runnable {
                 ProxPacket packet = request.packetClass().getConstructor().newInstance();
                 packet.preRead(KeylessBinaryDeserializer.fromBytes(request.data(), true));
 
-                if (Server.useUDP && Constants.SIDE == EnvType.SERVER) {
+                if (Server.useUDP && GameSingletons.isHost) {
                     IProxPlayer player;
-                    if ((player = (IProxPlayer) GameSingletons.getPlayerFromUniqueId(packet.getOriginPlayerUniqueId())) != null && player.needsIdentity()) {
+                    if ((player = (IProxPlayer) ServerSingletons.getAccountByUniqueId(packet.getOriginPlayerUniqueId())) != null && player.needsIdentity()) {
                         player.setUdpAddress(request.sender());
                         player.setUDPIdentity((UDPProxNetIdentity) request.identity());
                     }
                 }
 
-                packet.handle(Constants.SIDE, request.identity());
+                packet.handle(GameSingletons.isHost ? EnvType.SERVER : EnvType.CLIENT, request.identity());
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | IOException e) {
                 throw new RuntimeException(e);
             }
