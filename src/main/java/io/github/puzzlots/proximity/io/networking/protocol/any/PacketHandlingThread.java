@@ -52,8 +52,7 @@ public class PacketHandlingThread implements Runnable {
 
                     String uniqueId = packet.getOriginPlayerUniqueId();
                     Account account = ServerSingletons.getAccountByUniqueId(uniqueId);
-                    NetworkIdentity id = ServerSingletons.accountsToNetIds.get(account);
-                    if ((player = (IProxPlayer) ServerSingletons.getPlayer(id)) != null && player.needsIdentity()) {
+                    if ((player = (IProxPlayer) account) != null && player.needsIdentity()) {
                         player.setUdpAddress(request.sender());
                         player.setUDPIdentity(request.identity());
                     }

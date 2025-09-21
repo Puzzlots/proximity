@@ -7,7 +7,7 @@
     "networking.MixinNettyServer",
     "networking.MixinPlayerConnect",
     "networking.MixinPlayerJoinPacket",
-    "networking.PlayerMixin"
+    "networking.AccountMixin"
   ],
   "injectors": {
     "defaultRequire": 1
