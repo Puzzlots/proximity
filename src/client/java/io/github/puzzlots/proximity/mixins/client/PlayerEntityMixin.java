@@ -14,10 +14,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.nio.ShortBuffer;
-
-import static io.github.puzzlots.proximity.util.AudioUtils.computeLevel;
 
 @Mixin(PlayerEntity.class)
 public class PlayerEntityMixin extends Entity implements IAudioPlayer {
@@ -32,7 +31,7 @@ public class PlayerEntityMixin extends Entity implements IAudioPlayer {
     }
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    public void init() {
+    public void init(CallbackInfo info) {
         source = new PcmSoundSource(AudioCaptureThread.getFrequency(), PcmFormat.MONO_16_BIT);
         source.setVolume(30);
         source.enableAttenuation();
