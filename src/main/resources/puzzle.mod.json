@@ -15,10 +15,10 @@
   },
   "entrypoints": {
     "init": [
-      "io.github.Puzzlots.Proximity.Proximity"
+      "io.github.puzzlots.proximity.Proximity"
     ],
     "client-init": [
-      "io.github.Puzzlots.Proximity.ClientInitializer"
+      "io.github.puzzlots.proximity.ClientInitializer"
     ]
   },
   "depends": {
