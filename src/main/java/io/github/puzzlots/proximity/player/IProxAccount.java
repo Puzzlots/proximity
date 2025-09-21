@@ -4,7 +4,7 @@ import io.github.puzzlots.proximity.io.networking.IProxNetIdentity;
 
 import java.net.InetSocketAddress;
 
-public interface IProxPlayer {
+public interface IProxAccount {
 
     void setUdpAddress(InetSocketAddress address);
     InetSocketAddress getUDPAddress();

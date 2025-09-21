@@ -2,14 +2,13 @@ package io.github.puzzlots.proximity.io.networking.protocol.any;
 
 import dev.puzzleshq.puzzleloader.loader.util.EnvType;
 import finalforeach.cosmicreach.accounts.Account;
-import finalforeach.cosmicreach.networking.NetworkIdentity;
 import finalforeach.cosmicreach.networking.server.ServerSingletons;
 import finalforeach.cosmicreach.singletons.GameSingletons;
 import io.github.puzzlots.proximity.threading.ThreadBuilder;
 import io.github.puzzlots.proximity.io.networking.Server;
 import io.github.puzzlots.proximity.io.networking.packets.ProxPacket;
 import io.github.puzzlots.proximity.io.serialization.KeylessBinaryDeserializer;
-import io.github.puzzlots.proximity.player.IProxPlayer;
+import io.github.puzzlots.proximity.player.IProxAccount;
 import io.github.puzzlots.proximity.threading.Threads;
 
 import java.io.IOException;
@@ -48,11 +47,11 @@ public class PacketHandlingThread implements Runnable {
                 packet.preRead(KeylessBinaryDeserializer.fromBytes(request.data(), true));
 
                 if (Server.useUDP && GameSingletons.isHost) {
-                    IProxPlayer player;
+                    IProxAccount player;
 
                     String uniqueId = packet.getOriginPlayerUniqueId();
                     Account account = ServerSingletons.getAccountByUniqueId(uniqueId);
-                    if ((player = (IProxPlayer) account) != null && player.needsIdentity()) {
+                    if ((player = (IProxAccount) account) != null && player.needsIdentity()) {
                         player.setUdpAddress(request.sender());
                         player.setUDPIdentity(request.identity());
                     }

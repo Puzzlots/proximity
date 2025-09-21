@@ -2,14 +2,14 @@ package io.github.puzzlots.proximity.mixins.common.networking;
 
 import finalforeach.cosmicreach.accounts.Account;
 import io.github.puzzlots.proximity.io.networking.IProxNetIdentity;
-import io.github.puzzlots.proximity.player.IProxPlayer;
+import io.github.puzzlots.proximity.player.IProxAccount;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.net.InetSocketAddress;
 
 @Mixin(Account.class)
-public class AccountMixin implements IProxPlayer {
+public class AccountMixin implements IProxAccount {
 
     @Unique
     transient IProxNetIdentity proximity_audio$identity;

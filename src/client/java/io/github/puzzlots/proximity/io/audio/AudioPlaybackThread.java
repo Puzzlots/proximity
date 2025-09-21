@@ -7,8 +7,11 @@ import de.maxhenkel.opus4j.UnknownPlatformException;
 import de.pottgames.tuningfork.AudioConfig;
 import de.pottgames.tuningfork.PcmFormat;
 import de.pottgames.tuningfork.PcmSoundSource;
+import finalforeach.cosmicreach.entities.player.Player;
+import finalforeach.cosmicreach.entities.player.PlayerEntity;
 import finalforeach.cosmicreach.settings.INumberSetting;
 import finalforeach.cosmicreach.settings.types.FloatSetting;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import io.github.puzzlots.proximity.threading.ThreadBuilder;
@@ -33,7 +36,6 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
     }
 
     public static INumberSetting spkVolume = new FloatSetting("speaker-volume", 100);
-    final Queue<Triple<byte[], Vector3, Vector3>> queue = new ConcurrentLinkedQueue<>();
 
     public static float spkLevel = 0;
 
@@ -41,9 +43,11 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
         Threads.AUDIO_PLAYBACK_THREAD.start();
     }
 
-    public void queue(byte[] bytes, Vector3 location, Vector3 direction) {
+    public void queue(byte[] bytes, Player player) {
 //        System.out.println("queued Audio");
-        queue.add(new ImmutableTriple<>(bytes, location, direction));
+        PlayerEntity entity;
+        if ((entity = (PlayerEntity) player.getEntity()) == null) return;
+        ((IAudioPlayer)entity).play(bytes);
     }
 
     @Override
@@ -68,7 +72,7 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
                 source = new PcmSoundSource(AudioCaptureThread.getFrequency(), PcmFormat.MONO_16_BIT);
                 source.setVolume(30);
                 source.enableAttenuation();
-                source.makeDirectional(new Vector3(0, 0, 0), 22.5f, 45, .2f);
+                source.makeDirectional(new Vector3(0, 1, 0), 22.5f, 45, .2f);
                 source.setVirtualization(AudioConfig.Virtualization.ON);
                 source.setSpatialization(AudioConfig.Spatialization.ON);
                 source.setAttenuationMinDistance(0);
@@ -79,19 +83,19 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
             System.out.println("Device has been initialized?: " + AudioCaptureThread.hasDevice());
 
             while (true) {
-                if (queue.isEmpty()) continue;
-
-                Triple<byte[], Vector3, Vector3> info = queue.poll();
-
-                short[] shorts = decoder.decode(info.getLeft());
-                spkLevel = computeLevel(shorts);
-                buffer1.put(shorts);
-                buffer1.flip();
-                source.queueSamples(buffer1);
-                source.setDirection(info.getRight());
-                source.setPosition(info.getMiddle());
-                source.setVolume(AudioPlaybackThread.spkVolume.getValueAsFloat());
-                source.play();
+//                if (queue.isEmpty()) continue;
+//
+//                ImmutablePair<byte[], Player> info = queue.poll();
+//
+//                short[] shorts = decoder.decode(info.getLeft());
+//                spkLevel = computeLevel(shorts);
+//                buffer1.put(shorts);
+//                buffer1.flip();
+//                source.queueSamples(buffer1);
+//                source.setDirection(info.getRight());
+//                source.setPosition(info.getMiddle());
+//                source.setVolume(AudioPlaybackThread.spkVolume.getValueAsFloat());
+//                source.play();
             }
         } catch (Exception e) {
             e.printStackTrace();

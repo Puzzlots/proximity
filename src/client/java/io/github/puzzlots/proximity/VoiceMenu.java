@@ -140,13 +140,13 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
         this.stage.addActor(spkVolumeBar);
 
         //mic volume slider
-        CRSlider micSlider = this.createSettingsCRSlider(AudioCaptureThread.micVolume, "Mic Volume: ", 0.0F, 2.0F, 0.01F, this.percentFormat);
+        CRSlider micSlider = this.createSettingsCRSlider(AudioCaptureThread.micVolume, "Mic Volume: ", 0.0F, 4.0F, 0.01F, this.percentFormat);
         micSlider.addAction(new AlignXAction(1, 0.5F));
         micSlider.addAction(new AlignYAction(1, 0.5F, 50.0F));
         micSlider.setSize(275.0F, 35.0F);
         this.stage.addActor(micSlider);
 
-        CRSlider spkSlider = this.createSettingsCRSlider(AudioPlaybackThread.spkVolume, "Speaker Volume: ", 0.0F, 2.0F, 0.01F, this.percentFormat);
+        CRSlider spkSlider = this.createSettingsCRSlider(AudioPlaybackThread.spkVolume, "Speaker Volume: ", 0.0F, 4.0F, 0.01F, this.percentFormat);
         spkSlider.addAction(new AlignXAction(1, 0.5F));
         spkSlider.addAction(new AlignYAction(1, 0.5F, -10.0F));
         spkSlider.setSize(275.0F, 35.0F);

@@ -8,6 +8,7 @@
     "ClientNetworkManagerMixin",
     "KeybindingMenuMixin",
     "NettyClientMixin",
+    "PlayerEntityMixin",
     "UIMixin"
   ],
   "injectors": {

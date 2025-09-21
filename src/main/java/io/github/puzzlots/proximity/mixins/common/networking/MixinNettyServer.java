@@ -7,7 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.github.puzzlots.proximity.io.networking.IProxNetIdentity;
 import io.github.puzzlots.proximity.io.networking.Server;
 import io.github.puzzlots.proximity.io.networking.protocol.udp.UDPProxNetIdentity;
-import io.github.puzzlots.proximity.player.IProxPlayer;
+import io.github.puzzlots.proximity.player.IProxAccount;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +18,7 @@ public class MixinNettyServer {
     @Inject(method = "removeContext", at = @At("TAIL"))
     private void removeContext(ChannelHandlerContext ctx, CallbackInfo ci, @Local Player removedPlayer) {
         try {
-            IProxNetIdentity identity = ((IProxPlayer) removedPlayer).getUDPIdentity();
+            IProxNetIdentity identity = ((IProxAccount) removedPlayer).getUDPIdentity();
 
             if (Server.useUDP) {
                 Server.identityMap.remove(Server.reverseIdentityMap.get(identity));
