@@ -29,9 +29,9 @@ repositories {
 
 dependencies {
     cosmicReach("finalforeach:cosmicreach:${cosmic_reach_version}")
-    implementation 'de.maxhenkel.rnnoise4j:rnnoise4j:2.0.2'
-    implementation 'de.maxhenkel.opus4j:opus4j:2.0.2'
-    implementation 'org.apache.commons:commons-lang3:3.14.0'
+    bundle implementation('de.maxhenkel.rnnoise4j:rnnoise4j:2.0.2')
+    bundle implementation('de.maxhenkel.opus4j:opus4j:2.0.2')
+    bundle implementation('org.apache.commons:commons-lang3:3.14.0')
 }
 
 processResources {

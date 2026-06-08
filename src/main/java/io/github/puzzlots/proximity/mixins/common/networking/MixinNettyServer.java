@@ -3,6 +3,7 @@ package io.github.puzzlots.proximity.mixins.common.networking;
 import com.llamalad7.mixinextras.sugar.Local;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.networking.netty.NettyServer;
+import io.github.puzzlots.proximity.io.audio.IAudioPlaybackThread;
 import io.netty.channel.ChannelHandlerContext;
 import io.github.puzzlots.proximity.io.networking.IProxNetIdentity;
 import io.github.puzzlots.proximity.io.networking.Server;
