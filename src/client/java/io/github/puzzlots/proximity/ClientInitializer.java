@@ -1,6 +1,6 @@
 package io.github.puzzlots.proximity;
 
-import dev.puzzleshq.puzzleloader.cosmic.core.modInitialises.ClientModInit;
+import dev.puzzleshq.puzzleloader.loader.mod.entrypoint.client.ClientModInit;
 import io.github.puzzlots.proximity.io.audio.AudioCaptureThread;
 import io.github.puzzlots.proximity.io.audio.AudioPlaybackThread;
 import io.github.puzzlots.proximity.io.networking.packets.ProxPacket;

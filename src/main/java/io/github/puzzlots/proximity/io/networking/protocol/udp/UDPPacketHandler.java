@@ -16,7 +16,7 @@ public class UDPPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        if (cause instanceof SocketException && GameSingletons.isClient) {
+        if (cause instanceof SocketException && GameSingletons.isClient()) {
             Client.shutdown();
         } else {
             super.exceptionCaught(ctx, cause);
@@ -25,7 +25,7 @@ public class UDPPacketHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        if (GameSingletons.isClient) {
+        if (GameSingletons.isClient()) {
             Client.shutdown();
             super.channelInactive(ctx);
         }
@@ -39,8 +39,8 @@ public class UDPPacketHandler extends ChannelInboundHandlerAdapter {
         try {
             datagramPacket.retain();
 
-            IProxNetIdentity identity = GameSingletons.isClient ? Client.IDENTITY : Server.SENDER_TO_IDENTITY_MAP.get(datagramPacket.sender());
-            if (GameSingletons.isHost && identity == null) {
+            IProxNetIdentity identity = GameSingletons.isClient() ? Client.IDENTITY : Server.SENDER_TO_IDENTITY_MAP.get(datagramPacket.sender());
+            if (GameSingletons.isHost() && identity == null) {
                 identity = new UDPProxNetIdentity(datagramPacket.sender(), ctx);
                 Server.identityMap.put(ctx, identity);
                 Server.reverseIdentityMap.put(identity, ctx);

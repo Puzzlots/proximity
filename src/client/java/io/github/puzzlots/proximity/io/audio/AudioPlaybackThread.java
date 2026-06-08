@@ -9,8 +9,8 @@ import de.pottgames.tuningfork.PcmFormat;
 import de.pottgames.tuningfork.PcmSoundSource;
 import finalforeach.cosmicreach.entities.player.Player;
 import finalforeach.cosmicreach.entities.player.PlayerEntity;
-import finalforeach.cosmicreach.settings.INumberSetting;
-import finalforeach.cosmicreach.settings.types.FloatSetting;
+import finalforeach.cosmicreach.util.settings.types.FloatSetting;
+import finalforeach.cosmicreach.util.settings.types.INumberSetting;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
@@ -70,7 +70,7 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
                 if (!AudioCaptureThread.hasDevice()) continue;
 
                 source = new PcmSoundSource(AudioCaptureThread.getFrequency(), PcmFormat.MONO_16_BIT);
-                source.setVolume(30);
+                source.setVolume(100);
                 source.enableAttenuation();
                 source.makeDirectional(new Vector3(0, 1, 0), 22.5f, 45, .2f);
                 source.setVirtualization(AudioConfig.Virtualization.ON);

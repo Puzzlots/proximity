@@ -20,7 +20,7 @@ public class MixinPlayerJoinPacket {
 
     @Inject(method = "handle", at = @At("TAIL"))
     private void handle(NetworkIdentity identity, ChannelHandlerContext ctx, CallbackInfo ci) {
-        if (GameSingletons.isHost) {
+        if (GameSingletons.isHost()) {
             return;
         }
 

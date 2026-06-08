@@ -46,7 +46,7 @@ public class PacketHandlingThread implements Runnable {
                 ProxPacket packet = request.packetClass().getConstructor().newInstance();
                 packet.preRead(KeylessBinaryDeserializer.fromBytes(request.data(), true));
 
-                if (Server.useUDP && GameSingletons.isHost) {
+                if (Server.useUDP && GameSingletons.isHost()) {
                     IProxAccount player;
 
                     String uniqueId = packet.getOriginPlayerUniqueId();
@@ -57,7 +57,7 @@ public class PacketHandlingThread implements Runnable {
                     }
                 }
 
-                packet.handle(GameSingletons.isHost ? EnvType.SERVER : EnvType.CLIENT, request.identity());
+                packet.handle(GameSingletons.isHost() ? EnvType.SERVER : EnvType.CLIENT, request.identity());
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | IOException e) {
                 throw new RuntimeException(e);
             }

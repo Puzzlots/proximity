@@ -28,7 +28,7 @@ public abstract class ProxPacket {
     }
 
     public final void preWrite(IKeylessSerializer serializer) throws IOException {
-        if (GameSingletons.isClient) {
+        if (GameSingletons.isClient()) {
             serializer.writeString(GameSingletons.client().getAccount().getUniqueId());
         } else {
             serializer.writeString(playerUniqueId);

@@ -37,7 +37,7 @@ public class UDPProxNetIdentity implements IProxNetIdentity {
     }
 
     public EnvType getSide() {
-        return GameSingletons.isClient ? EnvType.CLIENT : EnvType.SERVER;
+        return GameSingletons.isClient() ? EnvType.CLIENT : EnvType.SERVER;
     }
 
 }

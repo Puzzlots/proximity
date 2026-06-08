@@ -8,8 +8,8 @@ import de.pottgames.tuningfork.capture.CaptureConfig;
 import de.pottgames.tuningfork.capture.CaptureDevice;
 import finalforeach.cosmicreach.gamestates.InGame;
 import finalforeach.cosmicreach.networking.client.ClientNetworkManager;
-import finalforeach.cosmicreach.settings.INumberSetting;
-import finalforeach.cosmicreach.settings.types.FloatSetting;
+import finalforeach.cosmicreach.util.settings.types.FloatSetting;
+import finalforeach.cosmicreach.util.settings.types.INumberSetting;
 import io.github.puzzlots.proximity.threading.ThreadBuilder;
 import io.github.puzzlots.proximity.io.networking.client.Client;
 import io.github.puzzlots.proximity.io.networking.packets.EncodedPlayerReliantAudioPacket;
@@ -78,7 +78,12 @@ public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
             encoder = new OpusEncoder(48000, 1, OpusEncoder.Application.LOW_DELAY);
             encoder.setMaxPayloadSize(1500);
         } catch (IOException | de.maxhenkel.opus4j.UnknownPlatformException e) {
-            throw new RuntimeException(e);
+            try {
+                encoder = new OpusEncoder(48000, 1, OpusEncoder.Application.LOW_DELAY);
+                encoder.setMaxPayloadSize(1500);
+            } catch (IOException | de.maxhenkel.opus4j.UnknownPlatformException ex) {
+                throw new RuntimeException(ex);
+            }
         }
 
         final List<String> inputDeviceList = CaptureDevice.availableDevices();

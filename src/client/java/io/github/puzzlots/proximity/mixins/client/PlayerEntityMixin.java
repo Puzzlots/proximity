@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.BufferUtils;
 import de.pottgames.tuningfork.AudioConfig;
 import de.pottgames.tuningfork.PcmFormat;
 import de.pottgames.tuningfork.PcmSoundSource;
-import finalforeach.cosmicreach.entities.Entity;
+import finalforeach.cosmicreach.entities.GameEntity;
 import finalforeach.cosmicreach.entities.player.PlayerEntity;
 import io.github.puzzlots.proximity.io.audio.AudioCaptureThread;
 import io.github.puzzlots.proximity.io.audio.AudioPlaybackThread;
@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.nio.ShortBuffer;
 
 @Mixin(PlayerEntity.class)
-public class PlayerEntityMixin extends Entity implements IAudioPlayer {
+public class PlayerEntityMixin extends GameEntity implements IAudioPlayer {
 
     @Unique
     private transient PcmSoundSource source;
@@ -30,7 +30,7 @@ public class PlayerEntityMixin extends Entity implements IAudioPlayer {
         super(entityTypeId);
     }
 
-    @Inject(method = "<init>", at = @At("TAIL"))
+    @Inject(method = "<init>*", at = @At("TAIL"))
     public void init(CallbackInfo info) {
         source = new PcmSoundSource(AudioCaptureThread.getFrequency(), PcmFormat.MONO_16_BIT);
         source.setVolume(30);
