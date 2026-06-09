@@ -33,6 +33,7 @@ public abstract class UIMixin {
             //swapping to correct texture
             Sprite statusIcon = new Sprite(micOn);
             if (AudioCaptureThread.MIC_MUTED.get()) {statusIcon.setTexture(micOff);}
+            if (!AudioCaptureThread.TALKING.get() && !AudioCaptureThread.MIC_MUTED.get()) return;
 
             //set positions
             statusIcon.flip(false,true);

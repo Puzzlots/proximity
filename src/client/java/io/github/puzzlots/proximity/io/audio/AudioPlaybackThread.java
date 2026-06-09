@@ -160,8 +160,8 @@ public class AudioPlaybackThread implements Runnable, IAudioPlaybackThread {
                 PlayerAudioState state = getOrCreateState(entity, frequency);
 
                 short[] shorts = state.decoder.decode(info.getLeft());
-                spkLevel = computeLevel(shorts);
                 state.processAudio(shorts);
+                spkLevel = computeLevel(shorts);
 
                 state.buffer.clear();
                 state.buffer.put(shorts);

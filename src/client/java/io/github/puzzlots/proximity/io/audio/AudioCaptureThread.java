@@ -27,6 +27,9 @@ public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
 
     public static OpusEncoder encoder;
     public static IAudioCaptureThread INSTANCE;
+    public static final AtomicBoolean TALKING = new AtomicBoolean(false);
+    private static final AtomicBoolean THIS_TALKING = new AtomicBoolean(false);
+    private static final AtomicBoolean LAST_TALKING = new AtomicBoolean(false);
     public static final AtomicBoolean MIC_MUTED = new AtomicBoolean(false);
     public static Denoiser denoiser;
 
@@ -119,9 +122,16 @@ public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
 
             device.fetch16BitSamples(buffer, AudioCaptureThread.rawSoundShortBufferSize);
             applyVolume(buffer, micVolume.getValueAsFloat());
-            short[] denoisedBuffer = denoiser.denoise(buffer);
-            micLevel = computeLevel(denoisedBuffer);
-            byte[] bytes = encoder.encode(denoisedBuffer);
+            float speechProbability = denoiser.denoiseInPlace(buffer);
+            micLevel = computeLevel(buffer);
+            LAST_TALKING.set(THIS_TALKING.get());
+            THIS_TALKING.set(speechProbability >= 0.35F);
+
+            TALKING.set(THIS_TALKING.get() || LAST_TALKING.get());
+
+            if (!TALKING.get()) continue;
+
+            byte[] bytes = encoder.encode(buffer);
 
             if (ClientNetworkManager.isConnected() && InGame.getLocalPlayer() != null && InGame.getLocalPlayer().getPosition() != null) {
                 ProxPacket packet = new EncodedPlayerReliantAudioPacket(bytes);
