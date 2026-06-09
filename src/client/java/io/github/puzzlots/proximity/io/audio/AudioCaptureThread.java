@@ -37,8 +37,10 @@ public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
 
     public static final int rawSoundShortBufferSize = 480;
     public static INumberSetting micVolume = new FloatSetting("mic-volume", 1);
+    public static INumberSetting voxThreshold = new FloatSetting("vox-threshold", 0.35F);
 
     public static float micLevel = 0;
+    public static float spkProbability = 0;
 
     static {
         ThreadBuilder builder = ThreadBuilder.create("AUDIO-CAPTURE-THREAD", INSTANCE = new AudioCaptureThread());
@@ -124,8 +126,9 @@ public class AudioCaptureThread implements Runnable, IAudioCaptureThread {
             applyVolume(buffer, micVolume.getValueAsFloat());
             float speechProbability = denoiser.denoiseInPlace(buffer);
             micLevel = computeLevel(buffer);
+            spkProbability = speechProbability;
             LAST_TALKING.set(THIS_TALKING.get());
-            THIS_TALKING.set(speechProbability >= 0.35F);
+            THIS_TALKING.set(speechProbability >= voxThreshold.getValueAsFloat());
 
             TALKING.set(THIS_TALKING.get() || LAST_TALKING.get());
 

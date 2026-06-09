@@ -28,6 +28,7 @@ import org.lwjgl.opengl.GL20;
 import java.text.NumberFormat;
 
 import static io.github.puzzlots.proximity.io.audio.AudioCaptureThread.micLevel;
+import static io.github.puzzlots.proximity.io.audio.AudioCaptureThread.spkProbability;
 import static io.github.puzzlots.proximity.io.audio.AudioPlaybackThread.spkLevel;
 
 
@@ -48,6 +49,7 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
     Texture full = GameTexture.load(Constants.MOD_ID + ":ui/full.png").get();
     ProgressArrowTexture micVolumeBar = new ProgressArrowTexture(empty,full, Orientation2D.RIGHT);
     ProgressArrowTexture spkVolumeBar = new ProgressArrowTexture(empty,full, Orientation2D.RIGHT);
+    ProgressArrowTexture spkProbabilityBar = new ProgressArrowTexture(empty,full, Orientation2D.RIGHT);
 
     boolean cursorCaught;
     private final NumberFormat percentFormat = Lang.getPercentFormatter();
@@ -139,6 +141,11 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
         spkVolumeBar.setSize(275F, 3.0F);
         this.stage.addActor(spkVolumeBar);
 
+        spkProbabilityBar.addAction(new AlignXAction(1, 0.5F));
+        spkProbabilityBar.addAction(new AlignYAction(1, 0.5F, -96.5F));
+        spkProbabilityBar.setSize(275F, 3.0F);
+        this.stage.addActor(spkProbabilityBar);
+
         //mic volume slider
         CRSlider micSlider = this.createSettingsCRSlider(AudioCaptureThread.micVolume, "Mic Volume: ", 0.0F, 4.0F, 0.01F, this.percentFormat);
         micSlider.addAction(new AlignXAction(1, 0.5F));
@@ -146,11 +153,19 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
         micSlider.setSize(275.0F, 35.0F);
         this.stage.addActor(micSlider);
 
+        //speaker volume slider
         CRSlider spkSlider = this.createSettingsCRSlider(AudioPlaybackThread.spkVolume, "Speaker Volume: ", 0.0F, 4.0F, 0.01F, this.percentFormat);
         spkSlider.addAction(new AlignXAction(1, 0.5F));
         spkSlider.addAction(new AlignYAction(1, 0.5F, -10.0F));
         spkSlider.setSize(275.0F, 35.0F);
         this.stage.addActor(spkSlider);
+
+        //speaker volume slider
+        CRSlider voxSlider = this.createSettingsCRSlider(AudioCaptureThread.voxThreshold, "VOX Threshold: ", 0.0F, 1.0F, 0.01F, this.percentFormat);
+        voxSlider.addAction(new AlignXAction(1, 0.5F));
+        voxSlider.addAction(new AlignYAction(1, 0.5F, -70.0F));
+        voxSlider.setSize(275.0F, 35.0F);
+        this.stage.addActor(voxSlider);
 
 
 //      mic button
@@ -174,7 +189,7 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
 
 
         micButton.addAction(new AlignXAction(1, 0.5F));
-        micButton.addAction(new AlignYAction(1, 0.5F, -60.0F));
+        micButton.addAction(new AlignYAction(1, 0.5F, -120.0F));
         micButton.setSize(275.0F, 35.0F);
         this.stage.addActor(micButton);
 
@@ -197,7 +212,7 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
         iconButton.setText(string + ((VoiceMenu.drawIcon) ? VoiceMenu.this.on : VoiceMenu.this.off));
 
         iconButton.addAction(new AlignXAction(1, 0.5F));
-        iconButton.addAction(new AlignYAction(1, 0.5F, -100.0F));
+        iconButton.addAction(new AlignYAction(1, 0.5F, -160.0F));
         iconButton.setSize(275.0F, 35.0F);
         this.stage.addActor(iconButton);
 
@@ -235,6 +250,7 @@ public class VoiceMenu extends GameState implements IGameStateInWorld {
         Gdx.gl.glCullFace(1028);
         micVolumeBar.setProgress(micLevel);
         spkVolumeBar.setProgress(spkLevel);
+        spkProbabilityBar.setProgress(spkProbability);
         this.stage.draw();
         Gdx.gl.glEnable(2884);
         Gdx.gl.glCullFace(1029);
